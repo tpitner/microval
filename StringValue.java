@@ -1,10 +1,10 @@
-public class StringParameter extends Parameter {
+public class StringValue extends Value {
 
   private String defaultData;
   private int minLength = -1;
   private int maxLength = -1;
 
-  public StringParameter(String name, String description) {
+  public StringValue(String name, String description) {
     super(name, description);
     this.sanitize = false;
   } 
