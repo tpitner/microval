@@ -4,13 +4,18 @@ public class RegexValue extends StringValue {
 
   private Pattern pattern;
 
-  public RegexValue(String name, Pattern pattern, String description) {
+  public RegexValue(String name, String description) {
     super(name, description);
-    this.pattern = pattern;
-  } 
+  }
 
-  @Override public boolean valid() {
-    return super.valid() && pattern.matcher(data()).matches();
+  public RegexValue pattern(String pattern) {
+    this.pattern = Pattern.compile(pattern);
+    return this;
+  }
+
+  @Override public boolean valid(String data) {
+    this.valid = super.valid(data) && pattern.matcher(data()).matches();
+    return valid;
   }
 
   @Override public String toString() {

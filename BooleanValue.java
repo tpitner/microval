@@ -5,26 +5,37 @@ public class BooleanValue extends Value {
 
   public BooleanValue(String name, String description) {
     super(name, description);
-  } 
+  }
+
+  public BooleanValue defaultBoolean(boolean defaultData) {
+    this.defaultData = defaultData;
+    return this;
+  }
 
   public String defaultDataToString() {
     return String.valueOf(defaultData);
   }
-  
+
   public boolean getBoolean() {
     return valid() ? booleanData : defaultData;
   }
 
-  @Override public boolean valid() { 
-    try {
-      booleanData = Boolean.parseBoolean(data());
-    } catch(RuntimeException re) {
-      return false;
-    }
-    return true; 
+  @Override
+  public boolean valid(String data) {
+    if (super.valid(data)) {
+      try {
+        booleanData = Boolean.getBoolean(data());
+      } catch (RuntimeException re) {
+        this.valid = false;
+      }
+      this.valid = true;
+    } else
+      this.valid = false;
+    return valid;
   }
 
-  @Override public String toString() {
+  @Override
+  public String toString() {
     return "boolean(" + (valid() ? "" + getBoolean() : "EMPTY") + ") " + name();
   }
-} 
+}

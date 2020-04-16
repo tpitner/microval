@@ -9,10 +9,30 @@ public class StringValue extends Value {
     this.sanitize = false;
   } 
 
-  @Override public boolean valid() {
-    return (data() != null) 
+  public StringValue defaultString(String defaultData) {
+    this.defaultData = defaultData;
+    return this;
+  }
+
+  public StringValue minLength(int minLength) {
+    this.minLength = minLength;
+    return this;
+  }
+
+  public StringValue maxLength(int maxLength) {
+    this.maxLength = maxLength;
+    return this;
+  }
+
+  public StringValue length(int minLength, int maxLength) {
+    return minLength(minLength).maxLength(maxLength);
+  }  
+
+  @Override public boolean valid(String data) {
+    this.valid = super.valid(data)
       && (minLength < 0 || minLength <= data().length()) 
       && (maxLength < 0 || data().length() <= maxLength);
+    return valid;
   }
 
   public String defaultDataToString() {
