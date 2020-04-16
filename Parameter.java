@@ -1,26 +1,66 @@
-public abstract class Parameter extends Argument {
+public abstract class Parameter implements Comparable<Parameter> {
+
+  private String name;
+  private String description;
+  protected boolean sanitize = true;
 
   private String data;
   
   public Parameter(String name, String description) {
-    super(name, description);
-  } 
+    this.name = name;
+    this.description = description;
+  }
 
+  public boolean sanitize() {
+    if(sanitize) 
+      if(data != null) {
+        data = data.trim();
+        return true;
+      } else {
+        return false;
+      }
+    else return true;
+  }  
+  
+  public abstract boolean valid();
   protected abstract String defaultDataToString();
 
-  protected String data() { return data; }
-  
-  @Override public int match(String[] args, int index) {
-    data = checkArg(args, index);
-    return index + 1;
+  protected String data() { return data; } 
+  protected void data(String data) { this.data = data; } 
+  public String name() { return name; }
+  public String description() { return description; }
+
+  public String usage() {
+    return "[" + name() + "]\t default: '" + defaultDataToString() + "'\t" + description();
   }
 
-  @Override public boolean isParsed() { return data != null; }
-
-  @Override public boolean valid() { return isParsed(); }
-
-  @Override public void usage() {
-    System.out.println("[" + name() + "]\t default: '" + defaultDataToString() + "'\t" + description());
+  public static void requireNotNullBlank(String s, String message) {
+    if(s == null) throw new NullPointerException(message);
+    if(s.isBlank()) throw new IllegalArgumentException(message);
   }
 
+  public static void requireNotNullEmpty(Object[] a, String message) {
+    if(a == null) throw new NullPointerException(message);
+    if(a.length == 0) throw new IllegalArgumentException(message);
+  }
+
+  public static void requireInRange(Object[] a, int index, String message) {
+    if(index >= a.length) throw new ArrayIndexOutOfBoundsException(message);
+  }
+
+  @Override
+  public int compareTo(Parameter o) {
+    return name().compareTo(o.name());
+  } 
+
+  @Override
+  public boolean equals(Object o) {
+    if(o != null && this.getClass() == o.getClass()) {
+      return this.name().equals(((Parameter)o).name());
+    } 
+    return false;
+  }
+
+  @Override
+  public int hashCode() { return name().hashCode(); }
 } 

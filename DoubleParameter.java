@@ -2,10 +2,11 @@ public class DoubleParameter extends Parameter {
 
   private double doubleData;
   private double defaultData;
-
-  public DoubleParameter(String name, double defaultData, String description) {
+  private Double min = Double.NEGATIVE_INFINITY;
+  private Double max = Double.POSITIVE_INFINITY;
+  
+  public DoubleParameter(String name, String description) {
     super(name, description);
-    this.defaultData = defaultData;
   } 
 
   public String defaultDataToString() {

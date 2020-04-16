@@ -2,12 +2,22 @@ import java.nio.file.Path;
 
 public class PathParameter extends Parameter {
 
+  private Path pathData;
   private Path defaultData;
 
   public PathParameter(String name, Path defaultData, String description) {
     super(name, description);
     this.defaultData = defaultData;
   } 
+
+  @Override public boolean valid() {
+    try {
+      pathData = Path.of(data());
+      return pathData != null;
+    } catch(RuntimeException re) {
+      return false;
+    }
+  }
 
   public String defaultDataToString() {
     return String.valueOf(defaultData);
