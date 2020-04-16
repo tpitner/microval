@@ -1,11 +1,11 @@
-public class IntParameter extends Parameter {
+public class IntValue extends Value {
 
   private int intData;
   private int defaultData;
   private Integer min = null;
   private Integer max = null;
 
-  public IntParameter(String name, String description) {
+  public IntValue(String name, String description) {
     super(name, description);
   } 
 

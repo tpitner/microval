@@ -1,11 +1,11 @@
-public class DoubleParameter extends Parameter {
+public class DoubleValue extends Value {
 
   private double doubleData;
   private double defaultData;
   private Double min = Double.NEGATIVE_INFINITY;
   private Double max = Double.POSITIVE_INFINITY;
   
-  public DoubleParameter(String name, String description) {
+  public DoubleValue(String name, String description) {
     super(name, description);
   } 
 

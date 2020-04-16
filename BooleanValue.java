@@ -1,9 +1,9 @@
-public class BooleanParameter extends Parameter {
+public class BooleanValue extends Value {
 
   private boolean booleanData;
   private boolean defaultData;
 
-  public BooleanParameter(String name, String description) {
+  public BooleanValue(String name, String description) {
     super(name, description);
   } 
 

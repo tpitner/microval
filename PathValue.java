@@ -1,11 +1,11 @@
 import java.nio.file.Path;
 
-public class PathParameter extends Parameter {
+public class PathValue extends Value {
 
   private Path pathData;
   private Path defaultData;
 
-  public PathParameter(String name, Path defaultData, String description) {
+  public PathValue(String name, Path defaultData, String description) {
     super(name, description);
     this.defaultData = defaultData;
   } 

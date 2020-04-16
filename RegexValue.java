@@ -1,10 +1,10 @@
 import java.util.regex.Pattern;
 
-public class RegexParameter extends StringParameter {
+public class RegexValue extends StringValue {
 
   private Pattern pattern;
 
-  public RegexParameter(String name, Pattern pattern, String description) {
+  public RegexValue(String name, Pattern pattern, String description) {
     super(name, description);
     this.pattern = pattern;
   } 
