@@ -2,11 +2,22 @@ public class IntParameter extends Parameter {
 
   private int intData;
   private int defaultData;
+  private Integer min = null;
+  private Integer max = null;
 
-  public IntParameter(String name, int defaultData, String description) {
+  public IntParameter(String name, String description) {
     super(name, description);
-    this.defaultData = defaultData;
   } 
+
+  @Override public boolean valid() {
+    try {
+      intData = Integer.parseInt(data());
+      return (min == null || min.intValue() <= intData) 
+          && (max == null || intData <= max.intValue());
+    } catch(RuntimeException re) {
+      return false;
+    }
+  }
 
   public String defaultDataToString() {
     return String.valueOf(defaultData);
@@ -14,15 +25,6 @@ public class IntParameter extends Parameter {
   
   public int getInt() {
     return valid() ? intData : defaultData;
-  }
-
-  @Override public boolean valid() { 
-    try {
-      intData = Integer.parseInt(data());
-    } catch(RuntimeException re) {
-      return false;
-    }
-    return true; 
   }
 
   @Override public String toString() {

@@ -1,11 +1,19 @@
 public class StringParameter extends Parameter {
 
   private String defaultData;
+  private int minLength = -1;
+  private int maxLength = -1;
 
-  public StringParameter(String name, String defaultData, String description) {
+  public StringParameter(String name, String description) {
     super(name, description);
-    this.defaultData = defaultData;
+    this.sanitize = false;
   } 
+
+  @Override public boolean valid() {
+    return (data() != null) 
+      && (minLength < 0 || minLength <= data().length()) 
+      && (maxLength < 0 || data().length() <= maxLength);
+  }
 
   public String defaultDataToString() {
     return defaultData;
