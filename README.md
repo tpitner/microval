@@ -6,18 +6,22 @@ Ultra lightweight Java/Android validation framework
 ## Description
 - Library for conversion and validation 
 - Extremely simple & easy to use
-- Strongly typed: boolean, int, double, String, regex validated String, Path supported
-- 
+- Strongly typed: `boolean`, `int`, `double`, `String`, regex validated `String`, `Path` supported
+- Allows provision of default values when input is missing (`null`) or invalid
+- Allows to specify _min...max ranges_ for numeric types (`int`, `double`)
+- Allows to specify _minimal and maximal length_ of `String` 
+- Offers detailed diagnostics on missing on invalid inputs (separated messages will be added in future)
+- Is fully _thread-safe_
 
 ## Usage
-- Create Patterns (either _BooleanPattern_, _IntPattern_, _DoublePattern_, _StringPattern_, _RegexPattern_, _PathPattern_) using constructors with Pattern _name_ and _description_ which is used to indicate errors in missing or invalid.
-- Modify them by adding default values (_defaultIfMissing_, _defaultIfInvalid_).
-- You may use patterns to _match_ String inputs, i.e. convert and validate them to resulting typed values. 
-- The _match_ returns _Result_ which can be queried:
--- _isValid()_ true iff the _match(input)_ matched,
--- return the value read: eg. in case of _IntPattern_ _int getInt)_ returns the int read from input String,
--- _getMessage()_ returns error message in case the input was missing or not valid. 
-- Validation is thread-safe (ie. one can validate against the same _Pattern_ in multiple threads concurrently).
+- Create Patterns (either `BooleanPattern`, `IntPattern`, `DoublePattern`, `StringPattern`, `RegexPattern`, `PathPattern`) using constructors with Pattern `name` and `description` which is used to indicate errors in missing or invalid.
+- Modify them by adding default values (`defaultIfMissing`, `defaultIfInvalid`).
+- You may use patterns to `match` String inputs, i.e. convert and validate them to resulting typed values. 
+- The `match` returns `Result` which can be queried:
+-- `isValid()` true iff the `match(input)` matched,
+-- return the value read: eg. in case of `IntPattern` `int getInt()` returns the integer read from input `String`,
+-- `getMessage()` returns error message in case the input was missing or not valid. 
+- Validation is thread-safe (ie. one can validate against the same `Pattern` in multiple threads concurrently).
 
 ## Example
 
