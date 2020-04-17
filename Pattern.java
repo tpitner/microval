@@ -1,41 +1,29 @@
-public abstract class Value implements Comparable<Parameter> {
+public class Pattern implements Comparable<Pattern> {
 
   private String name;
   private String description;
+  
   protected boolean sanitize = true;
 
-  public Value(String name, String description) {
+  public Pattern(String name, String description) {
     this.name = name;
     this.description = description;
   }
 
+  public Result match(String data) {
+    return new Result() { };
+  }
+  
   public String doSanitize(String data) {
-    if (data == null) {
-      return null;
-    } else {
-      if (sanitize()) {
-        return data.trim();
-      } else {
-        return data;
-      }
-    }
+    return data == null ? null : (sanitize ? data.trim() : data);
   }
 
-  public String valid(String data) {
-    return doSanitize(data);
-  }
-
-  protected abstract String defaultDataToString();
   public String name() {
     return name;
   }
 
   public String description() {
     return description;
-  }
-
-  public String usage() {
-    return "[" + name() + "]\t default: '" + defaultDataToString() + "'\t" + description();
   }
 
   public static void requireNotNullBlank(String s, String message) {
@@ -58,14 +46,14 @@ public abstract class Value implements Comparable<Parameter> {
   }
 
   @Override
-  public int compareTo(Parameter o) {
+  public int compareTo(Pattern o) {
     return name().compareTo(o.name());
   }
 
   @Override
   public boolean equals(Object o) {
     if (o != null && this.getClass() == o.getClass()) {
-      return this.name().equals(((Parameter) o).name());
+      return this.name().equals(((Pattern) o).name());
     }
     return false;
   }

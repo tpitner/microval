@@ -1,57 +1,70 @@
-public class IntValue extends Value {
+public class IntPattern extends Pattern {
 
-  private int intData;
-  private int defaultData;
+  private Integer defaultIfMissing;
+  private Integer defaultIfInvalid;
+
   private Integer min = null;
   private Integer max = null;
 
-  public IntValue(String name, String description) {
+  public IntPattern(String name, String description) {
     super(name, description);
   }
 
-  public IntValue defaultInt(int defaultData) {
-    this.defaultData = defaultData;
+  public IntPattern defaultIfInvalid(int defaultIfInvalid) {
+    this.defaultIfInvalid = defaultIfInvalid;
     return this;
   }
 
-  public IntValue min(int min) {
+  public IntPattern defaultIfMissing(int defaultIfMissing) {
+    this.defaultIfMissing = defaultIfMissing;
+    return this;
+  }
+
+  public IntPattern min(int min) {
     this.min = min;
     return this;
   }
 
-  public IntValue max(int max) {
+  public IntPattern max(int max) {
     this.max = max;
     return this;
   }
 
-  public IntValue range(int min, int max) {
+  public IntPattern range(int min, int max) {
     return min(min).max(max);
   }
 
   @Override
-  public boolean valid(String data) {
-    if (super.valid(data)) {
+  public Result match(String data) {
+    final String sanitized = doSanitize(data);
+    if(sanitized == null) {
+      return defaultIfMissing == null 
+        ? new Result() { }
+        : new Result() {
+          @Override public int getInt() { return defaultIfMissing; }
+        };
+    } else {
       try {
-        intData = Integer.parseInt(data());
-        this.valid = (min == null || min.intValue() <= intData) && (max == null || intData <= max.intValue());
-      } catch (RuntimeException re) {
-        this.valid = false;
+        final int result = Integer.parseInt(sanitized);
+        final boolean valid = 
+          (min == null || min.intValue() <= result) 
+            && (max == null || max.intValue() >= result);
+        return valid ? new Result() {
+          @Override public boolean isValid() { return true; }
+          @Override public int getInt() { return result; }
+        } : new Result() {
+          @Override public int getInt() { return defaultIfInvalid; }
+          @Override public String getMessage() { return description(); }
+        };
+      } catch(NumberFormatException nfe) {
+        return defaultIfInvalid == null 
+          ? new Result() {
+            @Override public String getMessage() { return description(); }
+          } : new Result() {
+            @Override public String getMessage() { return description(); }
+            @Override public int getInt() { return defaultIfInvalid; }
+          };
       }
-    } else
-      this.valid = false;
-    return valid;
-  }
-
-  public String defaultDataToString() {
-    return String.valueOf(defaultData);
-  }
-
-  public int getInt() {
-    return valid() ? intData : defaultData;
-  }
-
-  @Override
-  public String toString() {
-    return "int(" + (valid() ? "" + getInt() : "EMPTY") + ") " + name();
+    }
   }
 }
