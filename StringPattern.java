@@ -28,7 +28,7 @@ public class StringValue extends Value {
     return minLength(minLength).maxLength(maxLength);
   }  
 
-  @Override public boolean valid(String data) {
+  @Override public String valid(String data) {
     this.valid = super.valid(data)
       && (minLength < 0 || minLength <= data().length()) 
       && (maxLength < 0 || data().length() <= maxLength);

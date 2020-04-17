@@ -9,8 +9,8 @@ public class PathValue extends Value {
     super(name, description);
   }
 
-  public PathValue defaultData(Path defaultData) {
-    this.defaultData = defaultData;
+  public PathValue defaultPath(String defaultData) {
+    this.defaultData = Path.of(defaultData);
     return this;
   }
 
