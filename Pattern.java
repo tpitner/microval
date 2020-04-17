@@ -4,64 +4,34 @@ public abstract class Value implements Comparable<Parameter> {
   private String description;
   protected boolean sanitize = true;
 
-  private String data;
-  protected boolean valid = false;
-
   public Value(String name, String description) {
     this.name = name;
     this.description = description;
   }
 
-  public boolean doSanitize(String data) {
+  public String doSanitize(String data) {
     if (data == null) {
-      return false;
+      return null;
     } else {
       if (sanitize()) {
-        this.data = data.trim();
+        return data.trim();
       } else {
-        this.data = data;
+        return data;
       }
-      return true;
     }
   }
 
-  public boolean valid(String data) {
-    this.valid = doSanitize(data);
-    return valid;
-  }
-
-  public boolean valid() {
-    return valid;
+  public String valid(String data) {
+    return doSanitize(data);
   }
 
   protected abstract String defaultDataToString();
-
-  protected String data() {
-    return data;
-  }
-
-  public void data(String data) {
-    this.data = data;
-  }
-
   public String name() {
     return name;
   }
 
   public String description() {
     return description;
-  }
-
-  public boolean sanitize() {
-    return sanitize;
-  }
-
-  public void setSanitize(boolean sanitize) {
-    this.sanitize = sanitize;
-  }
-
-  public void setSanitize() {
-    setSanitize(true);
   }
 
   public String usage() {

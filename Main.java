@@ -15,6 +15,8 @@ public class Main {
         .length(1, 10).defaultString("nnnnnnnn"),
       new RegexValue("myRegex", "myRegex parameter")
         .pattern("\\d*").defaultString("bbbbb"),
+      new PathValue("myPath", "myPath parameter")
+        .defaultPath("bbbbb.txt")
     };
     Arrays.asList(pars).forEach(v ->
       System.out.println(v.valid("100") + " " + v));
