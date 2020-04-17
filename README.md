@@ -17,10 +17,10 @@ Ultra lightweight Java/Android validation framework
 - Create Patterns (either `BooleanPattern`, `IntPattern`, `DoublePattern`, `StringPattern`, `RegexPattern`, `PathPattern`) using constructors with Pattern `name` and `description` which is used to indicate errors in missing or invalid.
 - Modify them by adding default values (`defaultIfMissing`, `defaultIfInvalid`).
 - You may use patterns to `match` String inputs, i.e. convert and validate them to resulting typed values. 
-- The `match` returns `Result` which can be queried:
--- `isValid()` true iff the `match(input)` matched,
--- return the value read: eg. in case of `IntPattern` `int getInt()` returns the integer read from input `String`,
--- `getMessage()` returns error message in case the input was missing or not valid. 
+- The `match` returns `Result` which can be queried, e.g.
+- `isValid()` true iff the `match(input)` matched,
+- The value converted and validated: eg. in case of `IntPattern` `int getInt()` returns the integer read from input `String`,
+- Feedback: `getMessage()` returns error message in case the input was missing or not valid. 
 - Validation is thread-safe (ie. one can validate against the same `Pattern` in multiple threads concurrently).
 
 ## Example
