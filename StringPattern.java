@@ -1,49 +1,69 @@
-public class StringValue extends Value {
+public class StringPattern extends Pattern {
 
-  private String defaultData;
+  protected String defaultIfMissing;
+  protected String defaultIfInvalid;
+
   private int minLength = -1;
   private int maxLength = -1;
 
-  public StringValue(String name, String description) {
+  public StringPattern(String name, String description) {
     super(name, description);
     this.sanitize = false;
   } 
 
-  public StringValue defaultString(String defaultData) {
-    this.defaultData = defaultData;
+  public StringPattern defaultIfMissing(String defaultIfMissing) {
+    this.defaultIfMissing = defaultIfMissing;
     return this;
   }
 
-  public StringValue minLength(int minLength) {
+  public StringPattern defaultIfInvalid(String defaultIfInvalid) {
+    this.defaultIfInvalid = defaultIfInvalid;
+    return this;
+  }
+
+  @Override
+  public Result match(String data) {
+    final String sanitized = doSanitize(data);
+    if(sanitized == null) {
+      return defaultIfMissing == null 
+        ? new Result() {}
+        : new Result() {
+          @Override public String getString() { return defaultIfMissing; }
+        };
+    } else {
+      try {
+        final boolean valid = 
+          (minLength < 0 || minLength <= sanitized.length()) 
+          && (maxLength < 0 || sanitized.length() <= maxLength);
+        return valid ? new Result() {
+          @Override public boolean isValid() { return true; }
+          @Override public String getString() { return sanitized; }
+        } : new Result() {
+          @Override public String getString() { return defaultIfInvalid; }
+        };
+      } catch(NumberFormatException nfe) {
+        return defaultIfInvalid == null 
+          ? new Result() {
+            @Override public String getMessage() { return description(); }
+          } : new Result() {
+            @Override public String getString() { return defaultIfInvalid; }
+            @Override public String getMessage() { return description(); }
+          };
+      }
+    }
+  }
+
+  public StringPattern minLength(int minLength) {
     this.minLength = minLength;
     return this;
   }
 
-  public StringValue maxLength(int maxLength) {
+  public StringPattern maxLength(int maxLength) {
     this.maxLength = maxLength;
     return this;
   }
 
-  public StringValue length(int minLength, int maxLength) {
+  public StringPattern length(int minLength, int maxLength) {
     return minLength(minLength).maxLength(maxLength);
   }  
-
-  @Override public String valid(String data) {
-    this.valid = super.valid(data)
-      && (minLength < 0 || minLength <= data().length()) 
-      && (maxLength < 0 || data().length() <= maxLength);
-    return valid;
-  }
-
-  public String defaultDataToString() {
-    return defaultData;
-  }
-  
-  public String getString() {
-    return valid() ? data() : defaultData;
-  }
-
-  @Override public String toString() {
-    return "String(" + (valid() ? getString() : "EMPTY") + ") " + name();
-  }
 } 

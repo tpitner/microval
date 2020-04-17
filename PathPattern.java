@@ -1,43 +1,48 @@
 import java.nio.file.Path;
 
-public class PathValue extends Value {
+public class PathPattern extends Pattern {
 
-  private Path pathData;
-  private Path defaultData;
+  private Path defaultIfMissing;
+  private Path defaultIfInvalid;
 
-  public PathValue(String name, String description) {
+  public PathPattern(String name, String description) {
     super(name, description);
   }
 
-  public PathValue defaultPath(String defaultData) {
-    this.defaultData = Path.of(defaultData);
+  public PathPattern defaultIfMissing(Path defaultIfMissing) {
+    this.defaultIfMissing = defaultIfMissing;
+    return this;
+  }
+
+  public PathPattern defaultIfInvalid(Path defaultIfInvalid) {
+    this.defaultIfInvalid = defaultIfInvalid;
     return this;
   }
 
   @Override
-  public boolean valid(String data) {
-    if (super.valid(data)) {
+  public Result match(String data) {
+    final String sanitized = doSanitize(data);
+    if(sanitized == null) {
+      return defaultIfMissing == null 
+        ? new Result() { }
+        : new Result() {
+          @Override public Path getPath() { return defaultIfMissing; }
+        };
+    } else {
       try {
-        pathData = Path.of(data());
-        this.valid = pathData != null;
-      } catch (RuntimeException re) {
-        this.valid = false;
+        final Path result = Path.of(sanitized);
+        return new Result() {
+          @Override public boolean isValid() { return true; }
+          @Override public Path getPath() { return result; }
+        };
+      } catch(java.nio.file.InvalidPathException nfe) {
+        return defaultIfInvalid == null 
+          ? new Result() { 
+            @Override public String getMessage() { return description(); }
+          } : new Result() {
+            @Override public Path getPath() { return defaultIfInvalid; }
+          };
       }
-    } else
-      this.valid = false;
-    return valid;
-  }
-
-  public String defaultDataToString() {
-    return String.valueOf(defaultData);
-  }
-
-  public Path getPath() {
-    return valid() ? Path.of(data()) : defaultData;
-  }
-
-  @Override
-  public String toString() {
-    return "Path(" + (valid() ? String.valueOf(getPath()) : "EMPTY") + ") " + name();
+    }
   }
 }

@@ -1,41 +1,31 @@
-public class BooleanValue extends Value {
+public class BooleanPattern extends Pattern {
 
-  private boolean booleanData;
-  private boolean defaultData;
+  private Boolean defaultIfMissing;
 
-  public BooleanValue(String name, String description) {
+  public BooleanPattern(String name, String description) {
     super(name, description);
   }
 
-  public BooleanValue defaultBoolean(boolean defaultData) {
-    this.defaultData = defaultData;
+  public BooleanPattern defaultIfMissing(boolean defaultIfMissing) {
+    this.defaultIfMissing = defaultIfMissing;
     return this;
   }
 
-  public String defaultDataToString() {
-    return String.valueOf(defaultData);
-  }
-
-  public boolean getBoolean() {
-    return valid() ? booleanData : defaultData;
-  }
-
   @Override
-  public boolean valid(String data) {
-    if (super.valid(data)) {
-      try {
-        booleanData = Boolean.getBoolean(data());
-      } catch (RuntimeException re) {
-        this.valid = false;
-      }
-      this.valid = true;
-    } else
-      this.valid = false;
-    return valid;
-  }
-
-  @Override
-  public String toString() {
-    return "boolean(" + (valid() ? "" + getBoolean() : "EMPTY") + ") " + name();
+  public Result match(String data) {
+    final String sanitized = doSanitize(data);
+    if(sanitized == null) {
+      return defaultIfMissing == null 
+        ? new Result(){ }
+        : new Result(){
+          @Override public boolean getBoolean() { return defaultIfMissing; }
+        };
+    } else {
+      final boolean result = Boolean.getBoolean(sanitized);
+      return new Result() {
+        @Override public boolean isValid() { return true; }
+        @Override public boolean getBoolean() { return result; }
+      };
+    }
   }
 }
