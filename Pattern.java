@@ -6,6 +6,8 @@ public class Pattern implements Comparable<Pattern> {
   protected boolean sanitize = true;
 
   public Pattern(String name, String description) {
+    requireNotNullBlank(name, "Name of Pattern must not be null or empty");
+    requireNotNull(description, "Description of Pattern must not be null");
     this.name = name;
     this.description = description;
   }
@@ -26,9 +28,13 @@ public class Pattern implements Comparable<Pattern> {
     return description;
   }
 
-  public static void requireNotNullBlank(String s, String message) {
+  public static void requireNotNull(Object s, String message) {
     if (s == null)
       throw new NullPointerException(message);
+  }
+
+  public static void requireNotNullBlank(String s, String message) {
+    requireNotNull(s, message);
     if (s.isBlank())
       throw new IllegalArgumentException(message);
   }
@@ -61,5 +67,10 @@ public class Pattern implements Comparable<Pattern> {
   @Override
   public int hashCode() {
     return name().hashCode();
+  }
+
+  @Override
+  public String toString() {
+    return this.getClass().getName() + " " + name;
   }
 }

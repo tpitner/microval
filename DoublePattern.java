@@ -1,7 +1,9 @@
 public class DoublePattern extends Pattern {
 
-  private Double defaultIfMissing;
-  private Double defaultIfInvalid;
+  private Double ifMissing;
+  private Double ifInvalid;
+  private String ifMissingMessage;
+  private String ifInvalidMessage;
 
   private Double min = Double.NEGATIVE_INFINITY;
   private Double max = Double.POSITIVE_INFINITY;
@@ -10,48 +12,52 @@ public class DoublePattern extends Pattern {
     super(name, description);
   }
 
-  public DoublePattern defaultIfInvalid(double defaultIfInvalid) {
-    this.defaultIfInvalid = defaultIfInvalid;
+  public DoublePattern ifInvalid(double ifInvalid) {
+    this.ifInvalid = ifInvalid;
     return this;
   }
 
-  public DoublePattern defaultIfMissing(double defaultIfMissing) {
-    this.defaultIfMissing = defaultIfMissing;
+  public DoublePattern ifInvalid(double ifInvalid, String ifInvalidMessage) {
+    this.ifInvalidMessage = ifInvalidMessage;
+    return ifInvalid(ifInvalid);
+  }
+
+  public DoublePattern ifMissing(double ifMissing) {
+    this.ifMissing = ifMissing;
     return this;
   }
 
+  public DoublePattern ifMissing(double ifMissing, String ifMissingMessage) {
+    this.ifMissingMessage = ifMissingMessage;
+    return ifMissing(ifMissing);
+  }
+    
   @Override
   public Result match(String data) {
     final String sanitized = doSanitize(data);
     if(sanitized == null) {
-      return defaultIfMissing == null 
-        ? new Result() { 
-          @Override public String getMessage() { return description(); }
-        }
+      return ifMissing == null 
+        ? Result.EMPTY
         : new Result() {
-          @Override public String getMessage() { return description(); }
-          @Override public double getDouble() { return defaultIfMissing; }
+          @Override public String getMessage() { return ifMissingMessage; }
+          @Override public double getDouble() { return ifMissing; }
         };
     } else {
       try {
         final double result = Double.parseDouble(sanitized);
         final boolean valid = min.doubleValue() <= result && result <= max.intValue();
-        return valid ? new Result() {
+        if(valid) return new Result() {
           @Override public boolean isValid() { return true; }
           @Override public double getDouble() { return result; }
-        } : new Result() {
-          @Override public double getDouble() { return defaultIfInvalid; }
-          @Override public String getMessage() { return description(); }
         };
       } catch(NumberFormatException nfe) {
-        return defaultIfInvalid == null 
-        ? new Result() {
-          @Override public String getMessage() { return description(); }
-        } : new Result() {
-          @Override public String getMessage() { return description(); }
-          @Override public double getDouble() { return defaultIfInvalid; }
-        };
       }
+      return ifInvalid == null 
+        ? Result.EMPTY
+        : new Result() {
+          @Override public String getMessage() { return ifInvalidMessage; }
+          @Override public double getDouble() { return ifInvalid; }
+        };
     }
   }
 
@@ -67,5 +73,23 @@ public class DoublePattern extends Pattern {
 
   public DoublePattern range(double min, double max) {
     return min(min).max(max);
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() 
+      + (min == null 
+          ? ""
+          : ", min=" + min)
+      + (max == null 
+          ? ""
+          : ", max=" + max)
+      + (ifMissing == null 
+          ? ""
+          : ", ifMissing=" + ifMissing)
+      + (ifInvalid == null 
+          ? ""
+          : ", ifInvalid=" + ifInvalid)
+      ;
   }
 }

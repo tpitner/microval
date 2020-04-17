@@ -1,7 +1,9 @@
 public class IntPattern extends Pattern {
 
-  private Integer defaultIfMissing;
-  private Integer defaultIfInvalid;
+  private Integer ifMissing;
+  private Integer ifInvalid;
+  private String ifMissingMessage;
+  private String ifInvalidMessage;
 
   private Integer min = null;
   private Integer max = null;
@@ -10,14 +12,24 @@ public class IntPattern extends Pattern {
     super(name, description);
   }
 
-  public IntPattern defaultIfInvalid(int defaultIfInvalid) {
-    this.defaultIfInvalid = defaultIfInvalid;
+  public IntPattern ifInvalid(int ifInvalid) {
+    this.ifInvalid = ifInvalid;
     return this;
   }
 
-  public IntPattern defaultIfMissing(int defaultIfMissing) {
-    this.defaultIfMissing = defaultIfMissing;
+  public IntPattern ifInvalid(int ifInvalid, String ifInvalidMessage) {
+    this.ifInvalidMessage = ifInvalidMessage;
+    return ifInvalid(ifInvalid);
+  }
+
+  public IntPattern ifMissing(int ifMissing) {
+    this.ifMissing = ifMissing;
     return this;
+  }
+
+  public IntPattern ifMissing(int ifMissing, String ifMissingMessage) {
+    this.ifMissingMessage = ifMissingMessage;
+    return ifMissing(ifMissing);
   }
 
   public IntPattern min(int min) {
@@ -38,10 +50,11 @@ public class IntPattern extends Pattern {
   public Result match(String data) {
     final String sanitized = doSanitize(data);
     if(sanitized == null) {
-      return defaultIfMissing == null 
-        ? new Result() { }
+      return ifMissing == null 
+        ? Result.EMPTY
         : new Result() {
-          @Override public int getInt() { return defaultIfMissing; }
+          @Override public int getInt() { return ifMissing; }
+          @Override public String getMessage() { return ifMissingMessage; }
         };
     } else {
       try {
@@ -49,22 +62,36 @@ public class IntPattern extends Pattern {
         final boolean valid = 
           (min == null || min.intValue() <= result) 
             && (max == null || max.intValue() >= result);
-        return valid ? new Result() {
+        if(valid) return new Result() {
           @Override public boolean isValid() { return true; }
           @Override public int getInt() { return result; }
-        } : new Result() {
-          @Override public int getInt() { return defaultIfInvalid; }
-          @Override public String getMessage() { return description(); }
         };
       } catch(NumberFormatException nfe) {
-        return defaultIfInvalid == null 
-          ? new Result() {
-            @Override public String getMessage() { return description(); }
-          } : new Result() {
-            @Override public String getMessage() { return description(); }
-            @Override public int getInt() { return defaultIfInvalid; }
-          };
       }
+      return ifInvalid == null 
+        ? Result.EMPTY
+        : new Result() {
+          @Override public String getMessage() { return ifInvalidMessage; }
+          @Override public int getInt() { return ifInvalid; }
+        };
     }
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() 
+      + (min == null 
+          ? ""
+          : ", min=" + min)
+      + (max == null 
+          ? ""
+          : ", max=" + max)
+      + (ifMissing == null 
+          ? ""
+          : ", ifMissing=" + ifMissing)
+      + (ifInvalid == null 
+          ? ""
+          : ", ifInvalid=" + ifInvalid)
+      ;
   }
 }
