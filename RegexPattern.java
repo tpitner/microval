@@ -12,35 +12,38 @@ public class RegexPattern extends StringPattern {
   public Result match(String data) {
     final String sanitized = doSanitize(data);
     if(sanitized == null) {
-      return defaultIfMissing == null 
-        ? new Result() { }
+      return ifMissing == null 
+        ? Result.EMPTY
         : new Result() {
-            @Override public String getString() { return defaultIfMissing; }
+            @Override public String getString() { return ifMissing; }
         };
     } else {
       try {
         final boolean matches = pattern.matcher(sanitized).matches();
-        return matches ? new Result() {
+        if (matches) return new Result() {
           @Override public boolean isValid() { return true; }
           @Override public String getString() { return sanitized; }
-        } : new Result() {
-          @Override public boolean isValid() { return false; }
-          @Override public String getString() { return defaultIfInvalid; }
         };
       } catch(NumberFormatException nfe) {
-        return defaultIfInvalid == null 
-          ? new Result() {
-            @Override public String getMessage() { return description(); }
-          } : new Result() {
-            @Override public String getString() { return defaultIfInvalid; }
-            @Override public String getMessage() { return description(); }
-          };
       }
+      return ifInvalid == null ? Result.EMPTY : new Result() {
+        @Override public String getString() { return ifInvalid; }
+        @Override public String getMessage() { return description(); }
+      };
     }
   }
 
   public RegexPattern pattern(String pattern) {
+    requireNotNullBlank(pattern, "Regex pattern must not be null or empty");
     this.pattern = Pattern.compile(pattern);
     return this;
+  }
+
+  @Override
+  public String toString() {
+    return super.toString() 
+      + (pattern == null 
+          ? ""
+          : ", pattern=" + pattern);
   }
 } 

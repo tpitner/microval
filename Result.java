@@ -2,6 +2,8 @@ import java.nio.file.Path;
 
 public class Result {
 
+  public static final Result EMPTY = new Result();
+
   public boolean isValid() { return false; }
 
   public String getMessage() { return "Cannot parse null String"; }
